@@ -24,6 +24,7 @@ public class FileManager {
     public List<Path> allFileList = new ArrayList<Path>();
 
 
+
     public FileManager()
     {
         ui = new UI();
@@ -46,6 +47,56 @@ public class FileManager {
         noteFilesPath = Paths.get(noteFilesDirectoryString, noteFileString);
     }
 
+
+    public int WriteFile()
+    {
+        String errorCatch = "";
+        String fatalErrorCatch = "";
+        String lastFile = "";
+        String fileName = "";
+        int intErrorCatch = 0;
+
+        //Check if data directory exists
+        if(Files.notExists(dataDirectoryPath)){
+            try{
+                Files.createDirectories(dataDirectoryPath);
+                errorCatch = "Directory " + dataDirectoryString + " not found. Creating directory...\n";
+            } catch (IOException e){
+                e.printStackTrace();
+                fatalErrorCatch += "Unable to create directory " + dataDirectoryString + ".\n\n";
+            }
+        }
+
+        //Getting filename string
+        lastFile = allFileList.get(allFileList.size()).toString();
+
+        int fileNumber = Character.getNumericValue(lastFile.charAt(4)) + 1;
+
+        fileName = "note" + fileNumber;
+
+        noteFilesPath = Paths.get(noteFilesDirectoryString, fileName);
+
+        if(Files.notExists(noteFilesPath)){
+            try{
+                Files.createFile(noteFilesPath);
+                errorCatch += "File " + noteFileString + " not found. Creating file...\n";
+            } catch(IOException e){
+                e.printStackTrace();
+                fatalErrorCatch += "Unable to create directory " + noteFileString + ".\n\n";
+            }
+        }
+
+        if(fatalErrorCatch != ""){
+            ui.fatalErrorMessage(fatalErrorCatch);
+            intErrorCatch = -1;
+        }
+        if(errorCatch != "") {
+            ui.errorMessage(errorCatch);
+            intErrorCatch = 1;
+        }
+
+        return intErrorCatch;
+    }
 
 
     public int fileValidity()
