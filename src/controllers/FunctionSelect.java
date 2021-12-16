@@ -40,7 +40,7 @@ public class FunctionSelect {
         NoteCreate noteCreate = new NoteCreate();
         int identifier = ui.homePage();
 
-        if(identifier == 1)
+        if(identifier != 1)
         {
             fullNote = noteCreate.buildNote();
         }

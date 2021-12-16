@@ -22,6 +22,7 @@ public class FileManager {
     private Path noteFilesPath;
     private UI ui;
     public List<Path> allFileList = new ArrayList<Path>();
+    private String notExists;
 
 
 
@@ -45,6 +46,30 @@ public class FileManager {
         noteFilesDirectoryPath = Paths.get(noteFilesDirectoryString);
         //Fill path for first file access
         noteFilesPath = Paths.get(noteFilesDirectoryString, noteFileString);
+    }
+
+    public int CreateFile(String noteBody)
+    {
+        String errorCatch = "";
+        String fatalErrorCatch = "";
+        String lastFileName = "";
+        updateFileList();
+
+        noteFilesPath = Paths.get(noteFilesDirectoryString, notExists);
+        if(Files.notExists(noteFilesPath)){
+            try{
+                Files.createFile(noteFilesPath);
+                errorCatch += "File " + noteFileString + " not found. Creating file...\n";
+            } catch(IOException e){
+                e.printStackTrace();
+                fatalErrorCatch += "Unable to create directory " + noteFileString + ".\n\n";
+            }
+        }
+
+        System.out.print("\n" + notExists);
+
+
+        return 1;
     }
 
 
@@ -159,20 +184,22 @@ public class FileManager {
     public int updateFileList()
     {
         int error = 0;
+        boolean fileExists = true;
+        int fileNumber = 0;
+        String fileNameCheck = "";
 
-        //Check if file path exists
-        if(Files.exists(noteFilesDirectoryPath) && Files.isDirectory(noteFilesDirectoryPath)){
-            //Create directory stream
-            try{
-                DirectoryStream<Path> noteFilesDirectoryStream = Files.newDirectoryStream(noteFilesDirectoryPath);
-                //fill allFileList with file names
-                for(Path p: noteFilesDirectoryStream){
-                    if(Files.isRegularFile(p)){
-                        allFileList.add(p.getFileName());
-                    }
-                }
-            } catch (IOException e){
-                e.printStackTrace();
+        while(fileExists)
+        {
+            fileNameCheck = "note" + String.valueOf(fileNumber) + ".txt";
+            fileNumber = fileNumber + 1;
+            Path filePathCheck = Paths.get(noteFilesDirectoryString + "\\" + fileNameCheck);
+            System.out.println(noteFilesDirectoryString + fileNameCheck);
+
+            if(Files.notExists(filePathCheck))
+            {
+                System.out.print(fileNameCheck);
+                notExists = fileNameCheck;
+                fileExists = false;
             }
         }
 

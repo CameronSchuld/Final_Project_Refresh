@@ -55,4 +55,20 @@ public class UI {
         return;
     }
 
+    public void textEdit(String currentLine, String fullText)
+    {
+        System.out.print("\n\n--------------Edit Mode---------------\n");
+        System.out.print(" Press enter twice to edit previous text\n\n");
+
+        System.out.print(fullText);
+        return;
+    }
+
+    public void textEditSelect()
+    {
+        System.out.print("\ns: save note and quit\n");
+        System.out.print("q: quit without saving\n");
+        System.out.print("l: select line to edit\n");
+    }
+
 }
