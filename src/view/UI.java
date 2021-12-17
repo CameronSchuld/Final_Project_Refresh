@@ -1,12 +1,15 @@
 package view;
 
 import java.util.Scanner;
+import controllers.FunctionSelect;
 
 public class UI {
 
+    FunctionSelect functionSelect = new FunctionSelect();
+
     public int homePage()
     {
-        String inputString;
+        String inputString = "";
         int select = 0;
         boolean inputValidation = false;
 
@@ -25,18 +28,69 @@ public class UI {
             //Gather input
             inputString = input.next();
 
-            //Validate input
-            for (int i = 1; i < 6 || !inputValidation; i++) {
-                if (i == Integer.parseInt(inputString))
-                    inputValidation = true;
-
-                System.out.println(i + "==" + Integer.parseInt((inputString)));
+            if(functionSelect.isNumber(inputString.charAt(0)))
+            {
+                inputValidation = true;
+                break;
             }
+            System.out.print(inputString.charAt(0) + " is not a number please enter again...\n\n");
 
         }
 
+        select = Character.getNumericValue(inputString.charAt(0));
+
         return select;
 
+    }
+
+    public int fileSelect()
+    {
+        int fileNumber = 0;
+        String stringInput = "";
+        Scanner input = new Scanner(System.in);
+        boolean inputValidation = false;
+
+        while(!inputValidation)
+        {
+            System.out.print("Enter the number of the file you want to select\n: ");
+            stringInput = input.next();
+
+            inputValidation = true;
+            for(int a = 0; a < stringInput.length(); a++)
+            {
+                if(!Character.isDigit(stringInput.charAt(a))){
+                    inputValidation = false;
+                }
+            }
+            if(inputValidation)
+                break;
+            else
+                System.out.print("Enter a digit...\n\n");
+        }
+
+        return Integer.parseInt(stringInput);
+
+    }
+
+    public void printTitle(String print)
+    {
+        System.out.print("Title: " + print + "\n\n");
+        return;
+    }
+
+    public void printSomething(String printThisThing)
+    {
+        System.out.println(printThisThing);
+        return;
+    }
+
+    public String setTitle()
+    {
+        String title = "";
+        Scanner input = new Scanner(System.in);
+        System.out.print("Please enter a title for you note: ");
+        title = input.nextLine();
+        return title;
     }
 
     public void fatalErrorMessage(String message)
@@ -58,7 +112,7 @@ public class UI {
     public void textEdit(String currentLine, String fullText)
     {
         System.out.print("\n\n--------------Edit Mode---------------\n");
-        System.out.print(" Press enter twice to edit previous text\n\n");
+        System.out.print(" Press enter twice to save\n\n");
 
         System.out.print(fullText);
         return;

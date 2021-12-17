@@ -13,6 +13,7 @@ public class FunctionSelect {
         //Create FileManager object
         FileManager fileManager = new FileManager();
         UI ui = new UI();
+        boolean run = true;
 
 
 
@@ -24,26 +25,49 @@ public class FunctionSelect {
         //Full file display
         System.out.println("Checked and/or created");
 
-        fileManager.updateFileList();
-
-        for(Path path : fileManager.allFileList){
-            System.out.println(fileManager.allFileList);
-        }
-
-        //1. new note
-        //2. list note
-        //3. view note
-        //4. edit note
-        //5. quit
-
-        String fullNote = "";
-        NoteCreate noteCreate = new NoteCreate();
-        int identifier = ui.homePage();
-
-        if(identifier != 1)
+        while(run)
         {
-            fullNote = noteCreate.buildNote();
+            fileManager.updateFileList();
+
+            for(Path path : fileManager.allFileList){
+                System.out.println(fileManager.allFileList);
+            }
+
+            String fullNote = "";
+            NoteCreate noteCreate = new NoteCreate();
+            int identifier = ui.homePage();
+
+            if(identifier == 1)
+            {
+                fullNote = noteCreate.buildNote(-1);
+            }
+            else if(identifier == 2)
+            {
+                noteCreate.listNote();
+            }
+            else if(identifier == 3)
+            {
+                ui.printSomething(fileManager.getFileContents(ui.fileSelect()));
+            }
+            else if(identifier == 4)
+            {
+                int file = ui.fileSelect();
+                ui.printSomething((fileManager.getFileContents(file)));
+                fullNote = noteCreate.buildNote(file);
+                fileManager.CreateFile(fullNote, file);
+            }
+            else if(identifier == 5)
+            {
+                return;
+            }
         }
+    }
+
+    public boolean isNumber(char a)
+    {
+        boolean number = false;
+        number = Character.isDigit(a);
+        return number;
     }
 
 }

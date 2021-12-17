@@ -4,7 +4,9 @@ import view.UI;
 
 import java.io.*;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
+import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +25,7 @@ public class FileManager {
     private UI ui;
     public List<Path> allFileList = new ArrayList<Path>();
     private String notExists;
+    List<String> lines = new ArrayList<>();
 
 
 
@@ -48,14 +51,23 @@ public class FileManager {
         noteFilesPath = Paths.get(noteFilesDirectoryString, noteFileString);
     }
 
-    public int CreateFile(String noteBody)
+    public int CreateFile(String noteBody, int file)
     {
         String errorCatch = "";
         String fatalErrorCatch = "";
         String lastFileName = "";
         updateFileList();
 
-        noteFilesPath = Paths.get(noteFilesDirectoryString, notExists);
+        String fileName = "note" + String.valueOf(file) + ".txt";
+
+        //Create file
+        if(file < 0)
+            noteFilesPath = Paths.get(noteFilesDirectoryString, notExists);
+        else
+            noteFilesPath = Paths.get(noteFilesDirectoryString, fileName);
+
+        System.out.println(noteFilesPath);
+
         if(Files.notExists(noteFilesPath)){
             try{
                 Files.createFile(noteFilesPath);
@@ -64,6 +76,13 @@ public class FileManager {
                 e.printStackTrace();
                 fatalErrorCatch += "Unable to create directory " + noteFileString + ".\n\n";
             }
+        }
+
+        //Write file contents
+        try{
+            Files.write(noteFilesPath, noteBody.getBytes());
+        } catch(IOException e){
+            e.printStackTrace();
         }
 
         System.out.print("\n" + notExists);
@@ -180,6 +199,115 @@ public class FileManager {
         return error;
     }
 
+    public String extractTitle(int noteNumber)
+    {
+        String dataContents = "";
+        String title = "";
+        String fileName = "note" + String.valueOf(noteNumber) + ".txt";
+        String currentLine = "";
+
+        Path filePath = Paths.get(noteFilesDirectoryString + "\\" + fileName);
+
+        BufferedReader in;
+
+
+        try{
+            in = new BufferedReader(new FileReader(String.valueOf(filePath)));
+
+            try{
+                currentLine = in.readLine();
+                in.close();
+
+
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        boolean consistent = false;
+
+        if(currentLine != null)
+        {
+            for(int a = 2; currentLine.charAt(a) != ']' && currentLine != ""; a++)
+            {
+                title += currentLine.charAt(a);
+            }
+        }
+
+        return title;
+    }
+
+    public String getFileContents(int noteNumber)
+    {
+        String fileContents = "";
+        String fileName = "note";
+        String fullFileName = "";
+        String currentLine = "";
+
+        fullFileName = fileName + String.valueOf(noteNumber) + ".txt";
+        Path filePath = Paths.get(noteFilesDirectoryString + "\\" + fullFileName);
+
+        BufferedReader in;
+
+
+
+        try{
+            in = new BufferedReader(new FileReader(String.valueOf(filePath)));
+
+            try{
+                currentLine = in.readLine();
+
+                while(currentLine != null){
+                    lines.add(currentLine);
+                    currentLine = in.readLine();
+                }
+                in.close();
+
+
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        for(int a = 0; a < lines.size(); a++)
+        {
+            fileContents = fileContents + "\n" + lines.get(a);
+        }
+
+        return fileContents;
+    }
+
+    public void listAllFiles()
+    {
+        int error = 0;
+        boolean fileExists = true;
+        int fileNumber = 0;
+        String fileNameCheck = "";
+
+        while(fileExists)
+        {
+            fileNameCheck = "note" + String.valueOf(fileNumber) + ".txt";
+            Path filePathCheck = Paths.get(noteFilesDirectoryString + "\\" + fileNameCheck);
+
+
+            if(Files.notExists(filePathCheck))
+            {
+                fileExists = false;
+            }
+            else
+            {
+                ui.printSomething(fileNameCheck);
+                ui.printTitle(extractTitle(fileNumber));
+            }
+            fileNumber = fileNumber + 1;
+        }
+    }
 
     public int updateFileList()
     {
@@ -193,11 +321,9 @@ public class FileManager {
             fileNameCheck = "note" + String.valueOf(fileNumber) + ".txt";
             fileNumber = fileNumber + 1;
             Path filePathCheck = Paths.get(noteFilesDirectoryString + "\\" + fileNameCheck);
-            System.out.println(noteFilesDirectoryString + fileNameCheck);
 
             if(Files.notExists(filePathCheck))
             {
-                System.out.print(fileNameCheck);
                 notExists = fileNameCheck;
                 fileExists = false;
             }
